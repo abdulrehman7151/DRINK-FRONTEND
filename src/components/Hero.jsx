@@ -7,7 +7,7 @@ function Hero() {
             <div className="container hero-content">
                 <div className="hero-text">
                     <span className="hero-tag">FRESH <b>•</b> COLD <b>•</b> DELICIOUS</span>
-                    <h1>Your Daily Dose<br />of <span>Happiness.</span></h1>
+                    <h1>Your Daily Dose<br />of <span>Happiness</span></h1>
                     <p>Discover refreshing drinks made with premium ingredients and flavors you&apos;ll want again and again.</p>
                     <div className="hero-buttons">
                         <Link className="primary-btn" to="/products">Explore Drinks <span>↗</span></Link>
