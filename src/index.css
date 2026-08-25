@@ -426,7 +426,7 @@ a {
     background: #d9e9d1;
 }
 
-.product-overlay {
+/* .product-overlay {
     position: absolute;
     inset: 0;
     background: rgba(36, 35, 34, 0.45);
@@ -454,7 +454,7 @@ a {
 
 .product-card:hover .product-overlay {
     opacity: 1;
-}
+} */
 
 .heart-btn {
     position: absolute;
@@ -867,8 +867,71 @@ a {
     }
 }
 
+/* @media (hover: hover) {
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+} */
+/* ============================================
+   PRODUCT OVERLAY - PURE OVERLAY ONLY
+   ============================================ */
+
+.product-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(36, 35, 34, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.product-overlay span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.8px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    border-radius: 999px;
+    padding: 8px 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    white-space: nowrap;
+    text-align: center;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* DESKTOP - Show on hover */
 @media (hover: hover) {
     .product-card:hover .product-overlay {
         opacity: 1;
+    }
+}
+
+/* MOBILE - Hide overlay completely */
+@media (hover: none) {
+    .product-overlay {
+        opacity: 0 !important;
+    }
+}
+
+/* SMALLER SCREENS - Smaller text */
+@media (max-width: 768px) {
+    .product-overlay span {
+        font-size: 12px;
+        padding: 6px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-overlay span {
+        font-size: 10px;
+        padding: 4px 12px;
     }
 }
