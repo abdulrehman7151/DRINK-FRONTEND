@@ -14,7 +14,10 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
     useEffect(() => {
         async function loadProducts() {
             try {
-                const response = await axios.get('http://localhost:3000/api/products')
+                const response = await axios.get(
+                    'https://drink-backend-two.vercel.app/api/products'
+                )
+
                 const data = response.data
                 let productList = []
 
@@ -28,7 +31,11 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
 
                 setProducts(productList)
             } catch (error) {
-                showToast(error.response?.data?.message || 'Unable to load products', 'error')
+                showToast(
+                    error.response?.data?.message ||
+                    'Unable to load products',
+                    'error'
+                )
             } finally {
                 setLoading(false)
             }
@@ -44,24 +51,44 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
             return
         }
 
-        axios.get('http://localhost:3000/api/likes', {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then((response) => setLikedProductIds(response.data.productIds || []))
+        axios.get(
+            'https://drink-backend-two.vercel.app/api/likes',
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        )
+            .then((response) =>
+                setLikedProductIds(
+                    response.data.productIds || []
+                )
+            )
             .catch(() => setLikedProductIds([]))
     }, [])
 
     const displayedProducts = products.filter((product) => {
-        const productName = product.productName || product.name || ''
-        const matchesSearch = productName.toLowerCase().includes(searchQuery.trim().toLowerCase())
+        const productName =
+            product.productName || product.name || ''
+
+        const matchesSearch = productName
+            .toLowerCase()
+            .includes(searchQuery.trim().toLowerCase())
 
         if (!matchesSearch) return false
+
         if (activeFilter === 'All') return true
+
         if (activeFilter === 'Liked') {
-            return likedProductIds.includes(product._id || product.id)
+            return likedProductIds.includes(
+                product._id || product.id
+            )
         }
 
-        return (product.productCategory || product.category) === activeFilter
+        return (
+            (product.productCategory || product.category) ===
+            activeFilter
+        )
     })
 
     // What to show on screen

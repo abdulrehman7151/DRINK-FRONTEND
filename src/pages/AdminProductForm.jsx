@@ -36,26 +36,42 @@ function AdminProductForm() {
         async function loadProduct() {
             try {
                 const response = await axios.get(
-                    `http://localhost:3000/api/products/${productId}`
+                    `https://drink-backend-two.vercel.app/api/products/${productId}`
                 )
 
                 const savedProduct = response.data
-                
+
                 // Migrate old string arrays to objects for backwards compatibility in the UI
-                let sizes = savedProduct.availableSizes && savedProduct.availableSizes.length > 0
-                    ? savedProduct.availableSizes
-                    : [{ size: 'Medium', price: savedProduct.price || '' }, { size: 'Large', price: savedProduct.price || '' }]
-                
+                let sizes =
+                    savedProduct.availableSizes &&
+                        savedProduct.availableSizes.length > 0
+                        ? savedProduct.availableSizes
+                        : [
+                            {
+                                size: 'Medium',
+                                price: savedProduct.price || ''
+                            },
+                            {
+                                size: 'Large',
+                                price: savedProduct.price || ''
+                            }
+                        ]
+
                 if (typeof sizes[0] === 'string') {
-                    sizes = sizes.map(s => ({ size: s, price: savedProduct.price || '' }))
+                    sizes = sizes.map((s) => ({
+                        size: s,
+                        price: savedProduct.price || ''
+                    }))
                 }
 
                 setProduct({
                     productName: savedProduct.productName || '',
-                    productCategory: savedProduct.productCategory || '',
+                    productCategory:
+                        savedProduct.productCategory || '',
                     description: savedProduct.description || '',
                     availableSizes: sizes
                 })
+
                 setImagePreview(savedProduct.imageUrl || '')
             } catch (error) {
                 setMessage(
@@ -64,7 +80,12 @@ function AdminProductForm() {
                 )
 
                 setMessageType('error')
-                showToast(error.response?.data?.message || 'Could not load product.', 'error')
+
+                showToast(
+                    error.response?.data?.message ||
+                    'Could not load product.',
+                    'error'
+                )
             } finally {
                 setLoadingProduct(false)
             }
@@ -77,32 +98,54 @@ function AdminProductForm() {
     const handleChange = (e) => {
         const { name, value } = e.target
 
-        setProduct(prev => ({
+        setProduct((prev) => ({
             ...prev,
             [name]: value
         }))
     }
 
     const handleSizeToggle = (sizeName) => {
-        setProduct(prev => {
+        setProduct((prev) => {
             const sizes = prev.availableSizes || []
-            const exists = sizes.find(s => s.size === sizeName)
+            const exists = sizes.find((s) => s.size === sizeName)
+
             if (exists) {
-                return { ...prev, availableSizes: sizes.filter(s => s.size !== sizeName) }
+                return {
+                    ...prev,
+                    availableSizes: sizes.filter(
+                        (s) => s.size !== sizeName
+                    )
+                }
             } else {
-                return { ...prev, availableSizes: [...sizes, { size: sizeName, price: '' }] }
+                return {
+                    ...prev,
+                    availableSizes: [
+                        ...sizes,
+                        {
+                            size: sizeName,
+                            price: ''
+                        }
+                    ]
+                }
             }
         })
     }
 
     const handleSizePriceChange = (sizeName, newPrice) => {
-        setProduct(prev => {
+        setProduct((prev) => {
             const sizes = [...(prev.availableSizes || [])]
-            const sizeObj = sizes.find(s => s.size === sizeName)
+            const sizeObj = sizes.find(
+                (s) => s.size === sizeName
+            )
+
             if (sizeObj) {
                 sizeObj.price = newPrice
             }
-            return { ...prev, availableSizes: sizes }
+
+            return {
+                ...prev,
+                availableSizes: sizes
+            }
         })
     }
 
@@ -115,7 +158,9 @@ function AdminProductForm() {
         }
 
         setImage(selectedImage)
-        setImagePreview(URL.createObjectURL(selectedImage))
+        setImagePreview(
+            URL.createObjectURL(selectedImage)
+        )
     }
 
     // Submit Handler
@@ -123,14 +168,20 @@ function AdminProductForm() {
         e.preventDefault()
 
         if (product.availableSizes.length === 0) {
-            showToast('Please select at least one size', 'error')
+            showToast(
+                'Please select at least one size',
+                'error'
+            )
             return
         }
-        
+
         // Ensure all selected sizes have prices
         for (let s of product.availableSizes) {
             if (!s.price || isNaN(Number(s.price))) {
-                showToast(`Please enter a valid price for size ${s.size}`, 'error')
+                showToast(
+                    `Please enter a valid price for size ${s.size}`,
+                    'error'
+                )
                 return
             }
         }
@@ -142,23 +193,44 @@ function AdminProductForm() {
         try {
             const formData = new FormData()
 
-            formData.append("productName", product.productName)
-            formData.append("productCategory", product.productCategory)
-            
+            formData.append(
+                "productName",
+                product.productName
+            )
+
+            formData.append(
+                "productCategory",
+                product.productCategory
+            )
+
             // Set base price to the cheapest option for sorting/display
-            const lowestPrice = Math.min(...product.availableSizes.map(s => Number(s.price)))
+            const lowestPrice = Math.min(
+                ...product.availableSizes.map(
+                    (s) => Number(s.price)
+                )
+            )
+
             formData.append("price", lowestPrice)
-            
-            formData.append("description", product.description)
-            formData.append("availableSizes", JSON.stringify(product.availableSizes))
+
+            formData.append(
+                "description",
+                product.description
+            )
+
+            formData.append(
+                "availableSizes",
+                JSON.stringify(
+                    product.availableSizes
+                )
+            )
 
             if (image) {
                 formData.append("image", image)
             }
 
             const url = isEditing
-                ? `http://localhost:3000/api/products/${productId}`
-                : "http://localhost:3000/api/products"
+                ? `https://drink-backend-two.vercel.app/api/products/${productId}`
+                : "https://drink-backend-two.vercel.app/api/products"
 
             const token = localStorage.getItem("token")
 
@@ -180,12 +252,18 @@ function AdminProductForm() {
             )
 
             setMessageType("success")
-            showToast(response.data.message || 'Product saved successfully!')
+
+            showToast(
+                response.data.message ||
+                'Product saved successfully!'
+            )
 
             navigate('/admin/products')
-
         } catch (error) {
-            console.error("Error saving product:", error)
+            console.error(
+                "Error saving product:",
+                error
+            )
 
             setMessage(
                 error.response?.data?.message ||
@@ -193,8 +271,12 @@ function AdminProductForm() {
             )
 
             setMessageType("error")
-            showToast(error.response?.data?.message || 'Failed to save product. Please try again.', 'error')
 
+            showToast(
+                error.response?.data?.message ||
+                'Failed to save product. Please try again.',
+                'error'
+            )
         } finally {
             setLoading(false)
         }
@@ -218,7 +300,7 @@ function AdminProductForm() {
             const token = localStorage.getItem("token")
 
             const response = await axios.delete(
-                `http://localhost:3000/api/products/${productId}`,
+                `https://drink-backend-two.vercel.app/api/products/${productId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -232,10 +314,13 @@ function AdminProductForm() {
             )
 
             setMessageType('success')
-            showToast(response.data.message || 'Product deleted successfully.')
+
+            showToast(
+                response.data.message ||
+                'Product deleted successfully.'
+            )
 
             navigate('/admin/products')
-
         } catch (error) {
             setMessage(
                 error.response?.data?.message ||
@@ -243,8 +328,12 @@ function AdminProductForm() {
             )
 
             setMessageType('error')
-            showToast(error.response?.data?.message || 'Failed to delete product.', 'error')
 
+            showToast(
+                error.response?.data?.message ||
+                'Failed to delete product.',
+                'error'
+            )
         } finally {
             setLoading(false)
         }
@@ -257,7 +346,9 @@ function AdminProductForm() {
                     <span>CATALOG / PRODUCTS</span>
 
                     <h1>
-                        {isEditing ? 'Edit Product' : 'Add Product'}
+                        {isEditing
+                            ? 'Edit Product'
+                            : 'Add Product'}
                     </h1>
 
                     <p>
@@ -276,7 +367,6 @@ function AdminProductForm() {
             </div>
 
             <section className="admin-section product-form-card">
-
                 {loadingProduct ? (
                     <p className="admin-loading-state">
                         Loading product...
@@ -286,7 +376,6 @@ function AdminProductForm() {
                         className="admin-product-form"
                         onSubmit={handleSubmit}
                     >
-
                         <div className="form-section-heading">
                             <h2>Product details</h2>
 
@@ -295,14 +384,15 @@ function AdminProductForm() {
                             </p>
 
                             {message && (
-                                <p className={`form-message ${messageType}`}>
+                                <p
+                                    className={`form-message ${messageType}`}
+                                >
                                     {message}
                                 </p>
                             )}
                         </div>
 
                         <div className="admin-form-grid">
-
                             {/* Product Name */}
                             <label>
                                 Product name
@@ -323,7 +413,9 @@ function AdminProductForm() {
 
                                 <select
                                     name="productCategory"
-                                    value={product.productCategory}
+                                    value={
+                                        product.productCategory
+                                    }
                                     onChange={handleChange}
                                     required
                                 >
@@ -349,8 +441,6 @@ function AdminProductForm() {
                                 </select>
                             </label>
 
-
-
                             {/* Product Image */}
                             <label className="form-full">
                                 Product image
@@ -370,35 +460,105 @@ function AdminProductForm() {
                                     required={!isEditing}
                                 />
                             </label>
-                            
+
                             {/* Available Sizes & Prices */}
                             <label className="form-full">
                                 Available sizes & pricing
-                                
-                                <div className="admin-size-options" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
-                                    {['Small', 'Medium', 'Large', 'Extra Large'].map(sizeName => {
-                                        const sizeObj = (product.availableSizes || []).find(s => s.size === sizeName)
-                                        const isChecked = !!sizeObj
-                                        
+
+                                <div
+                                    className="admin-size-options"
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '10px',
+                                        marginTop: '10px'
+                                    }}
+                                >
+                                    {[
+                                        'Small',
+                                        'Medium',
+                                        'Large',
+                                        'Extra Large'
+                                    ].map((sizeName) => {
+                                        const sizeObj = (
+                                            product.availableSizes ||
+                                            []
+                                        ).find(
+                                            (s) =>
+                                                s.size ===
+                                                sizeName
+                                        )
+
+                                        const isChecked =
+                                            !!sizeObj
+
                                         return (
-                                            <div key={sizeName} style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal', cursor: 'pointer', width: '120px', margin: 0 }}>
-                                                    <input 
-                                                        type="checkbox" 
-                                                        style={{ width: 'auto', minHeight: 'auto', margin: 0 }}
-                                                        checked={isChecked}
-                                                        onChange={() => handleSizeToggle(sizeName)}
+                                            <div
+                                                key={sizeName}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '15px'
+                                                }}
+                                            >
+                                                <label
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        fontWeight:
+                                                            'normal',
+                                                        cursor: 'pointer',
+                                                        width: '120px',
+                                                        margin: 0
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        style={{
+                                                            width: 'auto',
+                                                            minHeight:
+                                                                'auto',
+                                                            margin: 0
+                                                        }}
+                                                        checked={
+                                                            isChecked
+                                                        }
+                                                        onChange={() =>
+                                                            handleSizeToggle(
+                                                                sizeName
+                                                            )
+                                                        }
                                                     />
+
                                                     {sizeName}
                                                 </label>
-                                                
+
                                                 {isChecked && (
-                                                    <input 
-                                                        type="number" 
-                                                        placeholder="Price (e.g. 400)" 
-                                                        value={sizeObj.price}
-                                                        onChange={(e) => handleSizePriceChange(sizeName, e.target.value)}
-                                                        style={{ padding: '6px 10px', minHeight: '36px', maxWidth: '200px', margin: 0 }}
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Price (e.g. 400)"
+                                                        value={
+                                                            sizeObj.price
+                                                        }
+                                                        onChange={(
+                                                            e
+                                                        ) =>
+                                                            handleSizePriceChange(
+                                                                sizeName,
+                                                                e.target
+                                                                    .value
+                                                            )
+                                                        }
+                                                        style={{
+                                                            padding:
+                                                                '6px 10px',
+                                                            minHeight:
+                                                                '36px',
+                                                            maxWidth:
+                                                                '200px',
+                                                            margin: 0
+                                                        }}
                                                         required
                                                     />
                                                 )}
@@ -414,17 +574,17 @@ function AdminProductForm() {
 
                                 <textarea
                                     name="description"
-                                    value={product.description}
+                                    value={
+                                        product.description
+                                    }
                                     onChange={handleChange}
                                     rows="5"
                                     placeholder="Describe this drink..."
                                 />
                             </label>
-
                         </div>
 
                         <div className="admin-form-actions">
-
                             {isEditing && (
                                 <button
                                     className="delete-product-btn"
@@ -453,12 +613,9 @@ function AdminProductForm() {
                                         ? 'Save changes'
                                         : 'Create product'}
                             </button>
-
                         </div>
-
                     </form>
                 )}
-
             </section>
         </>
     )

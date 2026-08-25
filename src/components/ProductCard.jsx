@@ -26,7 +26,7 @@ function ProductCard({ product }) {
 
         if (!token) return
 
-        axios.get(`http://localhost:3000/api/likes/${productId}`, {
+        axios.get(`https://drink-backend-two.vercel.app/api/likes/${productId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then((response) => setLiked(response.data.liked))
@@ -48,31 +48,49 @@ function ProductCard({ product }) {
 
         try {
             if (liked) {
-                await axios.delete(`http://localhost:3000/api/likes/${productId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
+                await axios.delete(
+                    `https://drink-backend-two.vercel.app/api/likes/${productId}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                )
             } else {
                 await axios.post(
-                    `http://localhost:3000/api/likes/${productId}`,
+                    `https://drink-backend-two.vercel.app/api/likes/${productId}`,
                     {},
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
                 )
             }
 
             setLiked((currentLiked) => !currentLiked)
-            showToast(liked ? 'Removed from favorites' : 'Added to favorites')
+
+            showToast(
+                liked
+                    ? 'Removed from favorites'
+                    : 'Added to favorites'
+            )
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to update favorite', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to update favorite',
+                'error'
+            )
         } finally {
             setLikeLoading(false)
         }
     }
 
     let displayPrice = `Rs. ${product.price || 0}`
+
     if (product.availableSizes && product.availableSizes.length > 0) {
-        const prices = product.availableSizes.map(s => Number(s.price))
+        const prices = product.availableSizes.map((s) => Number(s.price))
         const minPrice = Math.min(...prices)
         const maxPrice = Math.max(...prices)
+
         if (minPrice !== maxPrice) {
             displayPrice = `From Rs. ${minPrice}`
         } else {
@@ -91,17 +109,23 @@ function ProductCard({ product }) {
         >
             <div className="product-image">
                 {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={productName} />
+                    <img
+                        src={product.imageUrl}
+                        alt={productName}
+                    />
                 ) : (
                     <span>🥤</span>
                 )}
+
                 <div className="product-overlay">
                     <span>View Product</span>
                 </div>
+
                 <button
                     className="heart-btn"
                     type="button"
-                    aria-label={`${liked ? 'Remove' : 'Add'} ${productName} ${liked ? 'from' : 'to'} favorites`}
+                    aria-label={`${liked ? 'Remove' : 'Add'} ${productName} ${liked ? 'from' : 'to'
+                        } favorites`}
                     aria-pressed={liked}
                     disabled={likeLoading}
                     onClick={handleLike}
@@ -109,9 +133,14 @@ function ProductCard({ product }) {
                     {liked ? '♥' : '♡'}
                 </button>
             </div>
+
             <div className="product-info">
-                <span className="product-category">{productCategory}</span>
+                <span className="product-category">
+                    {productCategory}
+                </span>
+
                 <h3>{productName}</h3>
+
                 <div className="product-bottom">
                     <strong>{displayPrice}</strong>
                 </div>

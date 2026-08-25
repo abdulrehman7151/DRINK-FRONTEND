@@ -21,17 +21,23 @@ function AdminOrderStage() {
         try {
             setLoading(true)
             const token = localStorage.getItem('token')
+
             const response = await axios.get(
-                `http://localhost:3000/api/order/admin?status=${stage.status}`,
+                `https://drink-backend-two.vercel.app/api/order/admin?status=${stage.status}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }
             )
+
             setOrders(response.data.orders || [])
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to load orders', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to load orders',
+                'error'
+            )
         } finally {
             setLoading(false)
         }
@@ -47,7 +53,7 @@ function AdminOrderStage() {
             const token = localStorage.getItem('token')
 
             await axios.patch(
-                `http://localhost:3000/api/order/admin/${orderId}/status`,
+                `https://drink-backend-two.vercel.app/api/order/admin/${orderId}/status`,
                 { status: nextStatus },
                 {
                     headers: {
@@ -56,11 +62,23 @@ function AdminOrderStage() {
                 }
             )
 
-            setOrders((prev) => prev.filter((order) => order._id !== orderId))
-            window.dispatchEvent(new CustomEvent('orders-updated'))
-            showToast(`Order moved to ${formatStatusLabel(nextStatus)}`)
+            setOrders((prev) =>
+                prev.filter((order) => order._id !== orderId)
+            )
+
+            window.dispatchEvent(
+                new CustomEvent('orders-updated')
+            )
+
+            showToast(
+                `Order moved to ${formatStatusLabel(nextStatus)}`
+            )
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to update order', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to update order',
+                'error'
+            )
         } finally {
             setUpdatingId(null)
         }
@@ -75,7 +93,10 @@ function AdminOrderStage() {
                     <h2>{stage.label}</h2>
                     <p>{stage.description}</p>
                 </div>
-                <span className={`order-stage-badge ${stage.status}`}>
+
+                <span
+                    className={`order-stage-badge ${stage.status}`}
+                >
                     {orders.length} in this stage
                 </span>
             </div>
@@ -86,8 +107,12 @@ function AdminOrderStage() {
                 </div>
             ) : orders.length === 0 ? (
                 <div className="order-stage-empty">
-                    <div className="order-stage-empty-icon">{stage.icon}</div>
+                    <div className="order-stage-empty-icon">
+                        {stage.icon}
+                    </div>
+
                     <h3>No {stage.label.toLowerCase()}</h3>
+
                     <p>
                         {stage.status === 'pending'
                             ? 'New customer orders will show up here.'

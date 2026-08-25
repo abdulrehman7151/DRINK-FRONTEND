@@ -29,17 +29,23 @@ function AdminAllOrders() {
         try {
             setLoading(true)
             const token = localStorage.getItem('token')
+
             const response = await axios.get(
-                'http://localhost:3000/api/order/admin',
+                'https://drink-backend-two.vercel.app/api/order/admin',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }
             )
+
             setOrders(response.data.orders || [])
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to load orders', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to load orders',
+                'error'
+            )
         } finally {
             setLoading(false)
         }
@@ -55,7 +61,7 @@ function AdminAllOrders() {
             const token = localStorage.getItem('token')
 
             await axios.patch(
-                `http://localhost:3000/api/order/admin/${orderId}/status`,
+                `https://drink-backend-two.vercel.app/api/order/admin/${orderId}/status`,
                 { status: nextStatus },
                 {
                     headers: {
@@ -66,13 +72,23 @@ function AdminAllOrders() {
 
             setOrders((prev) =>
                 prev.map((order) =>
-                    order._id === orderId ? { ...order, status: nextStatus } : order
+                    order._id === orderId
+                        ? { ...order, status: nextStatus }
+                        : order
                 )
             )
+
             window.dispatchEvent(new CustomEvent('orders-updated'))
-            showToast(`Order moved to ${formatStatusLabel(nextStatus)}`)
+
+            showToast(
+                `Order moved to ${formatStatusLabel(nextStatus)}`
+            )
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to update order', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to update order',
+                'error'
+            )
         } finally {
             setUpdatingId(null)
         }
@@ -82,7 +98,9 @@ function AdminAllOrders() {
         let result = filterOrdersBySearch(orders, search)
 
         if (statusFilter !== 'all') {
-            result = result.filter((order) => order.status === statusFilter)
+            result = result.filter(
+                (order) => order.status === statusFilter
+            )
         }
 
         return result
@@ -93,8 +111,12 @@ function AdminAllOrders() {
             <div className="order-stage-panel-header">
                 <div>
                     <h2>All Orders</h2>
-                    <p>Search by order ID, name, phone, email, address, or product.</p>
+                    <p>
+                        Search by order ID, name, phone, email, address,
+                        or product.
+                    </p>
                 </div>
+
                 <span className="order-stage-badge pending">
                     {filteredOrders.length} shown
                 </span>
@@ -103,10 +125,13 @@ function AdminAllOrders() {
             <div className="order-search-toolbar">
                 <label className="order-search-field">
                     <span aria-hidden="true">⌕</span>
+
                     <input
                         type="search"
                         value={search}
-                        onChange={(event) => setSearch(event.target.value)}
+                        onChange={(event) =>
+                            setSearch(event.target.value)
+                        }
                         placeholder="Search orders..."
                         aria-label="Search orders"
                     />
@@ -115,11 +140,16 @@ function AdminAllOrders() {
                 <select
                     className="admin-period-select order-status-filter"
                     value={statusFilter}
-                    onChange={(event) => setStatusFilter(event.target.value)}
+                    onChange={(event) =>
+                        setStatusFilter(event.target.value)
+                    }
                     aria-label="Filter by status"
                 >
                     {STATUS_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
+                        <option
+                            key={option.value}
+                            value={option.value}
+                        >
                             {option.label}
                         </option>
                     ))}
@@ -133,7 +163,9 @@ function AdminAllOrders() {
             ) : filteredOrders.length === 0 ? (
                 <div className="order-stage-empty">
                     <div className="order-stage-empty-icon">⌕</div>
+
                     <h3>No orders found</h3>
+
                     <p>
                         {search || statusFilter !== 'all'
                             ? 'Try a different search or clear your filters.'

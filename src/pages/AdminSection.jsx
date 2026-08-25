@@ -28,7 +28,7 @@ function AdminOrders() {
             const query = filter !== 'all' ? `?status=${filter}` : ''
 
             const response = await axios.get(
-                `http://localhost:3000/api/order/admin${query}`,
+                `https://drink-backend-two.vercel.app/api/order/admin${query}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -38,7 +38,11 @@ function AdminOrders() {
 
             setOrders(response.data.orders || [])
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to load orders', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to load orders',
+                'error'
+            )
         } finally {
             setLoading(false)
         }
@@ -61,7 +65,7 @@ function AdminOrders() {
             const token = localStorage.getItem('token')
 
             const response = await axios.patch(
-                `http://localhost:3000/api/order/admin/${orderId}/status`,
+                `https://drink-backend-two.vercel.app/api/order/admin/${orderId}/status`,
                 { status },
                 {
                     headers: {
@@ -78,12 +82,20 @@ function AdminOrders() {
                 )
 
                 if (statusFilter === 'all') return next
-                return next.filter((order) => order.status === statusFilter)
+                return next.filter(
+                    (order) => order.status === statusFilter
+                )
             })
 
-            showToast(response.data.message || `Order ${status}`)
+            showToast(
+                response.data.message || `Order ${status}`
+            )
         } catch (error) {
-            showToast(error.response?.data?.message || 'Unable to update order', 'error')
+            showToast(
+                error.response?.data?.message ||
+                'Unable to update order',
+                'error'
+            )
         } finally {
             setUpdatingId(null)
         }
@@ -95,10 +107,15 @@ function AdminOrders() {
                 <div>
                     <span>MANAGEMENT</span>
                     <h1>Orders</h1>
-                    <p>View, accept, or reject customer orders.</p>
+                    <p>
+                        View, accept, or reject customer orders.
+                    </p>
                 </div>
 
-                <Link className="admin-back-link" to="/admin">
+                <Link
+                    className="admin-back-link"
+                    to="/admin"
+                >
                     ← Back to dashboard
                 </Link>
             </div>
@@ -128,8 +145,12 @@ function AdminOrders() {
                     </div>
                 ) : orders.length === 0 ? (
                     <div className="empty-admin-section">
-                        <div className="empty-admin-icon">◫</div>
+                        <div className="empty-admin-icon">
+                            ◫
+                        </div>
+
                         <h2>No orders yet</h2>
+
                         <p>
                             {statusFilter === 'all'
                                 ? 'Customer orders will appear here after they place an order.'
@@ -149,36 +170,93 @@ function AdminOrders() {
                         </div>
 
                         {orders.map((order) => (
-                            <div className="table-row admin-order-row" key={order._id}>
+                            <div
+                                className="table-row admin-order-row"
+                                key={order._id}
+                            >
                                 <span data-label="Order">
                                     #{order._id.slice(-6).toUpperCase()}
+
                                     <small className="order-date-meta">
-                                        {new Date(order.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}
+                                        {new Date(
+                                            order.createdAt
+                                        ).toLocaleString(
+                                            'en-US',
+                                            {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                                hour: 'numeric',
+                                                minute: '2-digit',
+                                                hour12: true
+                                            }
+                                        )}
                                     </small>
                                 </span>
 
                                 <span data-label="Customer">
-                                    <strong>{order.delivery?.fullName || '—'}</strong>
-                                    <small>{order.userId?.email || 'Unknown customer'}</small>
-                                    <small>{order.delivery?.phone || ''}</small>
+                                    <strong>
+                                        {order.delivery
+                                            ?.fullName || '—'}
+                                    </strong>
+
+                                    <small>
+                                        {order.userId?.email ||
+                                            'Unknown customer'}
+                                    </small>
+
+                                    <small>
+                                        {order.delivery?.phone ||
+                                            ''}
+                                    </small>
                                 </span>
 
-                                <span className="order-delivery-cell" data-label="Delivery">
-                                    <span>{order.delivery?.address || 'No address'}</span>
+                                <span
+                                    className="order-delivery-cell"
+                                    data-label="Delivery"
+                                >
+                                    <span>
+                                        {order.delivery?.address ||
+                                            'No address'}
+                                    </span>
+
                                     {order.delivery?.houseNo ? (
-                                        <small>House: {order.delivery.houseNo}</small>
+                                        <small>
+                                            House:{' '}
+                                            {
+                                                order.delivery
+                                                    .houseNo
+                                            }
+                                        </small>
                                     ) : null}
+
                                     {order.delivery?.notes ? (
-                                        <small>Note: {order.delivery.notes}</small>
+                                        <small>
+                                            Note:{' '}
+                                            {
+                                                order.delivery
+                                                    .notes
+                                            }
+                                        </small>
                                     ) : null}
                                 </span>
 
-                                <span className="order-products-cell" data-label="Products">
-                                    {order.products.map((item) => (
-                                        <span className="order-product" key={item._id}>
-                                            {formatOrderLineItem(item)}
-                                        </span>
-                                    ))}
+                                <span
+                                    className="order-products-cell"
+                                    data-label="Products"
+                                >
+                                    {order.products.map(
+                                        (item) => (
+                                            <span
+                                                className="order-product"
+                                                key={item._id}
+                                            >
+                                                {formatOrderLineItem(
+                                                    item
+                                                )}
+                                            </span>
+                                        )
+                                    )}
                                 </span>
 
                                 <span data-label="Total">
@@ -186,42 +264,76 @@ function AdminOrders() {
                                 </span>
 
                                 <span data-label="Status">
-                                    <span className={`order-status ${order.status}`}>
+                                    <span
+                                        className={`order-status ${order.status}`}
+                                    >
                                         {order.status}
                                     </span>
                                 </span>
 
-                                <span className="order-actions" data-label="Actions">
-                                    {order.status !== 'accepted' && (
-                                        <button
-                                            type="button"
-                                            className="order-action-btn accept"
-                                            disabled={updatingId === order._id}
-                                            onClick={() => updateStatus(order._id, 'accepted')}
-                                        >
-                                            Accept
-                                        </button>
-                                    )}
-                                    {order.status !== 'rejected' && (
-                                        <button
-                                            type="button"
-                                            className="order-action-btn reject"
-                                            disabled={updatingId === order._id}
-                                            onClick={() => updateStatus(order._id, 'rejected')}
-                                        >
-                                            Reject
-                                        </button>
-                                    )}
-                                    {order.status !== 'pending' && (
-                                        <button
-                                            type="button"
-                                            className="order-action-btn pending"
-                                            disabled={updatingId === order._id}
-                                            onClick={() => updateStatus(order._id, 'pending')}
-                                        >
-                                            Reset
-                                        </button>
-                                    )}
+                                <span
+                                    className="order-actions"
+                                    data-label="Actions"
+                                >
+                                    {order.status !==
+                                        'accepted' && (
+                                            <button
+                                                type="button"
+                                                className="order-action-btn accept"
+                                                disabled={
+                                                    updatingId ===
+                                                    order._id
+                                                }
+                                                onClick={() =>
+                                                    updateStatus(
+                                                        order._id,
+                                                        'accepted'
+                                                    )
+                                                }
+                                            >
+                                                Accept
+                                            </button>
+                                        )}
+
+                                    {order.status !==
+                                        'rejected' && (
+                                            <button
+                                                type="button"
+                                                className="order-action-btn reject"
+                                                disabled={
+                                                    updatingId ===
+                                                    order._id
+                                                }
+                                                onClick={() =>
+                                                    updateStatus(
+                                                        order._id,
+                                                        'rejected'
+                                                    )
+                                                }
+                                            >
+                                                Reject
+                                            </button>
+                                        )}
+
+                                    {order.status !==
+                                        'pending' && (
+                                            <button
+                                                type="button"
+                                                className="order-action-btn pending"
+                                                disabled={
+                                                    updatingId ===
+                                                    order._id
+                                                }
+                                                onClick={() =>
+                                                    updateStatus(
+                                                        order._id,
+                                                        'pending'
+                                                    )
+                                                }
+                                            >
+                                                Reset
+                                            </button>
+                                        )}
                                 </span>
                             </div>
                         ))}

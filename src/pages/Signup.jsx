@@ -20,7 +20,7 @@ function Signup() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:3000/api/auth/signup", {
+            const response = await axios.post("https://drink-backend-two.vercel.app/api/auth/signup", {
                 username: formData.name,
                 email: formData.email,
                 password: formData.password,

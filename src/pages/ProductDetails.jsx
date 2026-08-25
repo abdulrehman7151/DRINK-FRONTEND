@@ -16,11 +16,11 @@ function ProductDetails() {
         async function loadProduct() {
             try {
                 const response = await axios.get(
-                    `http://localhost:3000/api/products/${productId}`
+                    `https://drink-backend-two.vercel.app/api/products/${productId}`
                 )
                 const savedProduct = response.data
                 setProduct(savedProduct)
-                
+
                 if (savedProduct.availableSizes && savedProduct.availableSizes.length > 0) {
                     setSelectedSize(prevSize => {
                         const hasSize = savedProduct.availableSizes.find(s => s.size === prevSize)
@@ -58,7 +58,7 @@ function ProductDetails() {
         const productInCart = savedCart.find(
             (item) => item.productId === productId && (item.size || 'Medium') === selectedSize
         )
-        
+
         const sizeObj = product.availableSizes?.find(s => s.size === selectedSize)
         const priceToSave = sizeObj ? Number(sizeObj.price) : product.price
 
@@ -99,19 +99,19 @@ function ProductDetails() {
                     <div className="size-section">
                         <h2>Choose a size</h2>
                         <div className="size-options">
-                            {(product.availableSizes && product.availableSizes.length > 0 
-                                ? product.availableSizes.map(s => s.size) 
+                            {(product.availableSizes && product.availableSizes.length > 0
+                                ? product.availableSizes.map(s => s.size)
                                 : ['Medium', 'Large']).map((size) => (
-                                <button
-                                    key={size}
-                                    className={`size-option ${selectedSize === size ? 'active' : ''}`}
-                                    type="button"
-                                    aria-pressed={selectedSize === size}
-                                    onClick={() => setSelectedSize(size)}
-                                >
-                                    {size}
-                                </button>
-                            ))}
+                                    <button
+                                        key={size}
+                                        className={`size-option ${selectedSize === size ? 'active' : ''}`}
+                                        type="button"
+                                        aria-pressed={selectedSize === size}
+                                        onClick={() => setSelectedSize(size)}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
                         </div>
                     </div>
                     <div className="details-bottom">

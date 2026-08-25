@@ -65,14 +65,16 @@ function AdminOrdersLayout() {
         async function loadCounts() {
             try {
                 const token = localStorage.getItem('token')
+
                 const response = await axios.get(
-                    'http://localhost:3000/api/order/admin/counts',
+                    'https://drink-backend-two.vercel.app/api/order/admin/counts',
                     {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     }
                 )
+
                 setCounts(response.data.counts || {})
             } catch {
                 // counts are optional for layout
@@ -80,8 +82,11 @@ function AdminOrdersLayout() {
         }
 
         loadCounts()
+
         const interval = setInterval(loadCounts, 30000)
+
         window.addEventListener('orders-updated', loadCounts)
+
         return () => {
             clearInterval(interval)
             window.removeEventListener('orders-updated', loadCounts)
@@ -94,7 +99,10 @@ function AdminOrdersLayout() {
                 <div>
                     <span>ORDER MANAGEMENT</span>
                     <h1>Orders</h1>
-                    <p>Move orders through each stage — new, accepted, delivery, and done.</p>
+                    <p>
+                        Move orders through each stage — new, accepted,
+                        delivery, and done.
+                    </p>
                 </div>
 
                 <Link className="admin-back-link" to="/admin">
@@ -102,29 +110,41 @@ function AdminOrdersLayout() {
                 </Link>
             </div>
 
-            <nav className="order-stage-nav" aria-label="Order stages">
+            <nav
+                className="order-stage-nav"
+                aria-label="Order stages"
+            >
                 {ORDER_STAGES.map((stage) => (
                     <NavLink
                         key={stage.slug}
                         to={`/admin/orders/${stage.slug}`}
                         className={({ isActive }) =>
-                            `order-stage-link${isActive ? ' active' : ''}`
+                            `order-stage-link${isActive ? ' active' : ''
+                            }`
                         }
                     >
-                        <span className="order-stage-icon">{stage.icon}</span>
+                        <span className="order-stage-icon">
+                            {stage.icon}
+                        </span>
+
                         <span className="order-stage-text">
                             <strong>{stage.label}</strong>
+
                             <small>
                                 {stage.slug === 'all'
-                                    ? `${Object.values(counts).reduce((a, b) => a + b, 0)} total`
-                                    : `${counts[stage.status] || 0} orders`}
+                                    ? `${Object.values(counts).reduce(
+                                        (a, b) => a + b,
+                                        0
+                                    )} total`
+                                    : `${counts[stage.status] || 0
+                                    } orders`}
                             </small>
                         </span>
                     </NavLink>
                 ))}
             </nav>
 
-            <Outlet context={{ refreshCounts: () => {} }} />
+            <Outlet context={{ refreshCounts: () => { } }} />
         </div>
     )
 }

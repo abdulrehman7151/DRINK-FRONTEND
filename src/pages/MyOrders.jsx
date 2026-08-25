@@ -25,7 +25,7 @@ function MyOrders() {
                 }
 
                 const response = await axios.get(
-                    "http://localhost:3000/api/order/my-orders",
+                    "https://drink-backend-two.vercel.app/api/order/my-orders",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`
