@@ -805,7 +805,7 @@ a {
         font-size: clamp(32px, 10vw, 40px);
     }
 
-    .hero-text > p {
+    .hero-text>p {
         font-size: 13px;
     }
 
@@ -864,5 +864,11 @@ a {
 
     .footer-bottom {
         font-size: 10px;
+    }
+}
+
+@media (hover: hover) {
+    .product-card:hover .product-overlay {
+        opacity: 1;
     }
 }
