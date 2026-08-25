@@ -93,7 +93,7 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
 
     // What to show on screen
     if (loading) {
-        return <div>Loading...</div>
+        return <div className='product-loading-home'>Loading...</div>
     }
 
     if (displayedProducts.length === 0) {
