@@ -4961,3 +4961,9 @@
         padding: 24px 18px;
     }
 }
+
+@media (hover: hover) {
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+}
