@@ -30,7 +30,10 @@
 }
 
 .product-loading-home {
-    margin: auto;
+    color: rgb(228, 91, 11);
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-align: center;
 }
 
 /* =====================================================
