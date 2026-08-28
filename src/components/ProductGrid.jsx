@@ -4,13 +4,12 @@ import ProductCard from './ProductCard'
 import { useToast } from './Toast'
 
 function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
-    // State variables - think of these as storage boxes
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [likedProductIds, setLikedProductIds] = useState([])
     const { showToast } = useToast()
 
-    // This runs once when the component loads
+    // Load products
     useEffect(() => {
         async function loadProducts() {
             try {
@@ -44,6 +43,7 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
         loadProducts()
     }, [showToast])
 
+    // Load liked products
     useEffect(() => {
         const token = localStorage.getItem('token')
 
@@ -59,14 +59,17 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
                 }
             }
         )
-            .then((response) =>
+            .then((response) => {
                 setLikedProductIds(
                     response.data.productIds || []
                 )
-            )
-            .catch(() => setLikedProductIds([]))
+            })
+            .catch(() => {
+                setLikedProductIds([])
+            })
     }, [])
 
+    // Search + category filtering
     const displayedProducts = products.filter((product) => {
         const productName =
             product.productName || product.name || ''
@@ -77,25 +80,55 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
 
         if (!matchesSearch) return false
 
+        // Show all products
         if (activeFilter === 'All') return true
 
+        // Show only liked products
         if (activeFilter === 'Liked') {
             return likedProductIds.includes(
                 product._id || product.id
             )
         }
 
-        return (
-            (product.productCategory || product.category) ===
-            activeFilter
+        // Category filtering
+        const rawCategory = (
+            product.productCategory ||
+            product.category ||
+            ''
         )
+            .toString()
+            .trim()
+            .toLowerCase()
+
+        const rawFilter = activeFilter
+            .toString()
+            .trim()
+            .toLowerCase()
+
+        // Remove trailing "s"
+        // Example: Smoothies → Smoothie
+        //          Juices → Juice
+        const cleanCategory = rawCategory.endsWith('s')
+            ? rawCategory.slice(0, -1)
+            : rawCategory
+
+        const cleanFilter = rawFilter.endsWith('s')
+            ? rawFilter.slice(0, -1)
+            : rawFilter
+
+        return cleanCategory === cleanFilter
     })
 
-    // What to show on screen
+    // Loading
     if (loading) {
-        return <div className='product-loading-home'>Loading...</div>
+        return (
+            <div className='product-loading-home'>
+                Loading...
+            </div>
+        )
     }
 
+    // No products found
     if (displayedProducts.length === 0) {
         return (
             <div className="container product-grid empty-product-grid">
@@ -108,6 +141,7 @@ function ProductGrid({ activeFilter = 'All', searchQuery = '' }) {
         )
     }
 
+    // Display products
     return (
         <div className="container product-grid">
             {displayedProducts.map((product) => (
